@@ -20,6 +20,7 @@ import java.util.List;
  * @author chc
  * @date 2022/01/25
  * @since 1.0
+ * @description 网上代码：测试第一个yolo推理
  */
 public class YoloTestApplication {
 

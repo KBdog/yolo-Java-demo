@@ -31,7 +31,7 @@ import java.util.UUID;
 /**
  * @author kbdog
  * @package per.dnf.auto
- * @description 来源:https://cloud.tencent.com/developer/article/1912828
+ * @description 来源:https://cloud.tencent.com/developer/article/1912828 测试第二个yolo推理
  * @date 2023/3/6 23:20
  */
 @Slf4j

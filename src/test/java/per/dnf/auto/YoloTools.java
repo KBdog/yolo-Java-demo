@@ -51,11 +51,14 @@ public class YoloTools {
     //识别图片文件
     private static String imagePath="C:\\Users\\Lenovo\\Desktop\\OpenCV\\dog.png";
     //配置文件
-    private static String cfgPath="C:\\Users\\Lenovo\\Desktop\\OpenCV\\yolov4.cfg";
+//    private static String cfgPath="C:\\Users\\Lenovo\\Desktop\\OpenCV\\yolov4.cfg";
+    private static String cfgPath="C:\\Users\\Lenovo\\Desktop\\yolov4\\yolov4-custom.cfg";
     //权重文件
-    private static String weightsPath="C:\\Users\\Lenovo\\Desktop\\OpenCV\\yolov4.weights";
+//    private static String weightsPath="C:\\Users\\Lenovo\\Desktop\\OpenCV\\yolov4.weights";
+    private static String weightsPath="C:\\Users\\Lenovo\\Desktop\\yolov4\\yolov4-custom_6.weights";
     //名称文件
-    private static String namesPath="C:\\Users\\Lenovo\\Desktop\\OpenCV\\coco.names";
+//    private static String namesPath="C:\\Users\\Lenovo\\Desktop\\OpenCV\\coco.names";
+    private static String namesPath="C:\\Users\\Lenovo\\Desktop\\yolov4\\obj.names";
     //图片宽度
     private static int width=608;
     //图片高度
@@ -112,22 +115,28 @@ public class YoloTools {
         log.info("开始标记图片...");
         // 执行推理
         MatVector outs = doPredict(src);
+        long afterPredictTime = System.currentTimeMillis();
         // 处理原始的推理结果，
         // 对检测到的每个目标，找出置信度最高的类别作为改目标的类别，
         // 还要找出每个目标的位置，这些信息都保存在ObjectDetectionResult对象中
         List<ObjectDetectionResult> results = postprocess(src, outs);
+        long afterPostprocessTime = System.currentTimeMillis();
         // 释放资源
         outs.releaseReference();
         // 检测到的目标总数
         int detectNum = results.size();
+        long afterMarkTime=System.currentTimeMillis();
         if(detectNum>0){
             // 计算出总耗时，并输出在图片的左上角
             printTimeUsed(src);
             // 将每一个被识别的对象在图片框出来，并在框的左上角标注该对象的类别
             markEveryDetectObject(src, results);
+            afterMarkTime=System.currentTimeMillis();
         }
         long stop = System.currentTimeMillis();
-        log.info("标记图片完成,一共检测到"+detectNum+"个目标,耗时:"+(stop-start)+"ms");
+        log.info("标记图片完成,一共检测到"+detectNum+"个目标,推理耗时:"+(afterPredictTime-start)+
+                "ms,处理原始推理结果耗时:"+(afterPostprocessTime-afterPredictTime)+
+                "ms,标记处理耗时"+(afterMarkTime-afterPostprocessTime)+"ms,总耗时:"+(stop-start)+"ms");
         return src;
     }
 

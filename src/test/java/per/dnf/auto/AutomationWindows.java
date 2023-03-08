@@ -6,7 +6,6 @@ import com.sun.jna.platform.DesktopWindow;
 import com.sun.jna.platform.WindowUtils;
 import com.sun.jna.platform.win32.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.bcel.Const;
 import org.bytedeco.opencv.opencv_core.Mat;
 
 
@@ -28,30 +27,65 @@ import java.util.List;
 public class AutomationWindows {
 
     //使用jna遍历窗口获取目标窗口
-    public static WindowObj getGoalWindows(String windowsName){
+    public static WindowObj getGoalWindows(String className,String windowsName){
         User32 instance = User32.INSTANCE;
-        List<DesktopWindow> windowList = WindowUtils.getAllWindows(true);
-        for (DesktopWindow desktopWindow : windowList) {
-            String filePath = desktopWindow.getFilePath();
-            String title = desktopWindow.getTitle();
-            Rectangle rectangle = desktopWindow.getLocAndSize();
-            //窗口handle
-            WinDef.HWND hwnd = desktopWindow.getHWND();
-            int processId = instance.GetWindowThreadProcessId(hwnd, null);
-            if(!"".equals(title)&&windowsName!=null&&windowsName.equals(title)){
-                WindowObj windowObj=new WindowObj();
-                Integer width=(int) rectangle.getWidth();
-                Integer height=(int) rectangle.getHeight();
-                windowObj.setHwnd(hwnd);
-                windowObj.setWidth(width);
-                windowObj.setHeight(height);
-                windowObj.setTitle(title);
-                windowObj.setFilePath(filePath);
-                windowObj.setRectangle(rectangle.toString());
-                windowObj.setProcessId(processId);
-                return windowObj;
+        //有className和title
+        if(null!=className&&!"".equals(className)){
+            WinDef.HWND hwnd = instance.FindWindow(className, windowsName);
+            String title = WindowUtils.getWindowTitle(hwnd);
+            WinDef.RECT rect=new WinDef.RECT();
+            instance.GetWindowRect(hwnd,rect);
+            Rectangle rectangle = rect.toRectangle();
+            String filePath = "";
+            try {
+                filePath = WindowUtils.getProcessFilePath(hwnd);
+            }catch (Win32Exception e){
+                return null;
+            }
+            if(null!=hwnd){
+                int processId = instance.GetWindowThreadProcessId(hwnd, null);
+                if(!"".equals(title)&&windowsName!=null&&title.indexOf(windowsName)!=-1){
+                    WindowObj windowObj=new WindowObj();
+                    Integer width=(int) rectangle.getWidth();
+                    Integer height=(int) rectangle.getHeight();
+                    windowObj.setHwnd(hwnd);
+                    windowObj.setWidth(width);
+                    windowObj.setHeight(height);
+                    windowObj.setTitle(title);
+                    windowObj.setFilePath(filePath);
+                    windowObj.setRectangle(rectangle.toString());
+                    windowObj.setProcessId(processId);
+                    return windowObj;
+                }
+            }else {
+                return null;
+            }
+        }else {
+            //无className有title
+            List<DesktopWindow> windowList = WindowUtils.getAllWindows(true);
+            for (DesktopWindow desktopWindow : windowList) {
+                String filePath = desktopWindow.getFilePath();
+                String title = desktopWindow.getTitle();
+                Rectangle rectangle = desktopWindow.getLocAndSize();
+                //窗口handle
+                WinDef.HWND hwnd = desktopWindow.getHWND();
+                int processId = instance.GetWindowThreadProcessId(hwnd, null);
+                if(!"".equals(title)&&windowsName!=null&&title.indexOf(windowsName)!=-1){
+                    WindowObj windowObj=new WindowObj();
+                    Integer width=(int) rectangle.getWidth();
+                    Integer height=(int) rectangle.getHeight();
+                    windowObj.setHwnd(hwnd);
+                    windowObj.setWidth(width);
+                    windowObj.setHeight(height);
+                    windowObj.setTitle(title);
+                    windowObj.setFilePath(filePath);
+                    windowObj.setRectangle(rectangle.toString());
+                    windowObj.setProcessId(processId);
+                    return windowObj;
+                }
             }
         }
+
         return null;
     }
 
@@ -159,7 +193,7 @@ public class AutomationWindows {
                     }
                     //获取目标窗口->截屏
 //                    ConstantParam.obj=getGoalWindows("地下城与勇士：创新世纪");
-                    ConstantParam.obj=getGoalWindows("微信");
+                    ConstantParam.obj=getGoalWindows("","微信");
                 }
             }
         }).start();

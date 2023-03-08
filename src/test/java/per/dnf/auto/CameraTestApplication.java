@@ -12,7 +12,7 @@ import javax.swing.*;
 /**
  * @author kbdog
  * @package per.dnf.auto
- * @description
+ * @description 测试获取摄像头
  * @date 2023/3/7 4:17
  */
 public class CameraTestApplication {
