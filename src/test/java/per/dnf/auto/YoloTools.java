@@ -1,5 +1,8 @@
 package per.dnf.auto;
 
+import com.sun.jna.platform.WindowUtils;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef;
 import lombok.extern.slf4j.Slf4j;
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.DoublePointer;
@@ -10,6 +13,7 @@ import org.bytedeco.javacv.Java2DFrameConverter;
 import org.bytedeco.javacv.OpenCVFrameConverter;
 import org.bytedeco.opencv.global.opencv_dnn;
 import org.bytedeco.opencv.opencv_core.*;
+import org.bytedeco.opencv.opencv_core.Point;
 import org.bytedeco.opencv.opencv_dnn.Net;
 import org.bytedeco.opencv.opencv_text.FloatVector;
 import org.bytedeco.opencv.opencv_text.IntVector;
@@ -19,6 +23,7 @@ import org.opencv.dnn.Dnn;
 import org.opencv.imgcodecs.Imgcodecs;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.ByteArrayInputStream;
@@ -55,7 +60,7 @@ public class YoloTools {
     private static String cfgPath="C:\\Users\\Lenovo\\Desktop\\yolov4\\yolov4-custom.cfg";
     //权重文件
 //    private static String weightsPath="C:\\Users\\Lenovo\\Desktop\\OpenCV\\yolov4.weights";
-    private static String weightsPath="C:\\Users\\Lenovo\\Desktop\\yolov4\\yolov4-custom_6.weights";
+    private static String weightsPath="C:\\Users\\Lenovo\\Desktop\\yolov4\\Anime-Head.v1i.darknet\\weight\\yolov4-custom_2_8.weights.weights";
     //名称文件
 //    private static String namesPath="C:\\Users\\Lenovo\\Desktop\\OpenCV\\coco.names";
     private static String namesPath="C:\\Users\\Lenovo\\Desktop\\yolov4\\obj.names";
@@ -352,7 +357,7 @@ public class YoloTools {
 
 
     //byte[]转mat
-    public static Mat changeByteToMat( byte[] bytes) throws IOException {
+    public static Mat changeByteToMat( byte[] bytes)  {
         Mat data = imdecode(new Mat(bytes), IMREAD_UNCHANGED);
         return data;
     }
@@ -365,5 +370,39 @@ public class YoloTools {
         OpenCVFrameConverter.ToMat openCVConverter = new OpenCVFrameConverter.ToMat();
         Java2DFrameConverter java2DConverter = new Java2DFrameConverter();
         return java2DConverter.convert(openCVConverter.convert(mat));
+    }
+
+
+    //使用robot截屏记录图片
+    public static void captureAndSave(WinDef.HWND hwnd){
+        //置顶该窗口
+        boolean flag = User32.INSTANCE.SetForegroundWindow(hwnd);
+        System.out.println("置顶窗口:"+flag);
+        if(flag!=true){
+            return;
+        }
+        Robot robot=null;
+        try {
+            robot=new Robot();
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
+        WinDef.RECT dimensionsOfWindow = new WinDef.RECT();
+        User32.INSTANCE.GetWindowRect(hwnd,dimensionsOfWindow);
+        if(dimensionsOfWindow.toRectangle().getWidth()<=0){
+            return;
+        }
+        BufferedImage screenCapture = robot.createScreenCapture(dimensionsOfWindow.toRectangle());
+        byte[] bytes = new byte[0];
+        try {
+            bytes = YoloTools.changeBufferedImageToByte(screenCapture);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Mat mat = YoloTools.changeByteToMat( bytes);
+
+        Mat resultMat = YoloTools.markMat(mat);
+        YoloTools.saveMarkedImage(resultMat);
+        System.out.println("打印完成");
     }
 }

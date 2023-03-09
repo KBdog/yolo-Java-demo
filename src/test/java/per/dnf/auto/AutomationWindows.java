@@ -193,62 +193,71 @@ public class AutomationWindows {
                     }
                     //获取目标窗口->截屏
 //                    ConstantParam.obj=getGoalWindows("地下城与勇士：创新世纪");
-                    ConstantParam.obj=getGoalWindows("","微信");
+                    ConstantParam.obj=getGoalWindows("","地下城与勇士");
                 }
             }
         }).start();
 
         //无限循环采集屏幕
-        while (true){
-            try {
-                if(ConstantParam.obj!=null){
-                    //开启下一轮循环obj为null时的内容打印
-                    ConstantParam.logNotCaptureWindowSign=-1;
-                    if(ConstantParam.logIsCaptureWindowSign==-1){
-                        log.info("已捕捉到窗口！");
-                        ConstantParam.logIsCaptureWindowSign=1;
-                        log.info("窗口标题:"+ConstantParam.obj.getTitle());
-                        log.info("文件路径:"+ConstantParam.obj.getFilePath());
-                        log.info("窗口矩形:"+ConstantParam.obj.getRectangle());
-                        log.info("进程线程id:"+ConstantParam.obj.getProcessId());
-                    }
-                    BufferedImage bufferedImage = captureWindows(ConstantParam.obj.getHwnd());
-                    /**
-                     * 进行转化
-                     */
-                    BufferedImage resultImage=null;
-                    byte[] bytes = YoloTools.changeBufferedImageToByte(bufferedImage);
-                    Mat mat = YoloTools.changeByteToMat( bytes);
-                    Mat resultMat = YoloTools.markMat(mat);
-                    resultImage = YoloTools.matToBufferImageV3(resultMat);
-                    //图片等比缩放
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true){
+                    try {
+                        if(ConstantParam.obj!=null){
+                            //开启下一轮循环obj为null时的内容打印
+                            ConstantParam.logNotCaptureWindowSign=-1;
+                            if(ConstantParam.logIsCaptureWindowSign==-1){
+                                log.info("已捕捉到窗口！");
+                                ConstantParam.logIsCaptureWindowSign=1;
+                                ConstantParam.window=ConstantParam.obj.getHwnd();
+                                log.info("窗口标题:"+ConstantParam.obj.getTitle());
+                                log.info("文件路径:"+ConstantParam.obj.getFilePath());
+                                log.info("窗口矩形:"+ConstantParam.obj.getRectangle());
+                                log.info("进程线程id:"+ConstantParam.obj.getProcessId());
+                            }
+                            BufferedImage bufferedImage = captureWindows(ConstantParam.obj.getHwnd());
+                            /**
+                             * 进行转化
+                             */
+                            BufferedImage resultImage=null;
+                            byte[] bytes = YoloTools.changeBufferedImageToByte(bufferedImage);
+                            Mat mat = YoloTools.changeByteToMat( bytes);
+                            Mat resultMat = YoloTools.markMat(mat);
+                            resultImage = YoloTools.matToBufferImageV3(resultMat);
+                            //图片等比缩放
 //                    Image scaledInstance = bufferedImage.getScaledInstance(jf.getWidth(), jf.getHeight(),Image.SCALE_DEFAULT);
-                    if(resultImage!=null){
+                            if(resultImage!=null){
 //                        log.info("识别到目标！");
-                        Image scaledInstance = resultImage.getScaledInstance(jf.getWidth(), jf.getHeight(),Image.SCALE_DEFAULT);
-                        imageLabel.setIcon(new ImageIcon(scaledInstance));
+                                Image scaledInstance = resultImage.getScaledInstance(jf.getWidth(), jf.getHeight(),Image.SCALE_DEFAULT);
+                                imageLabel.setIcon(new ImageIcon(scaledInstance));
 //                        YoloTools.saveMarkedImage(resultMat);
-                    }else {
+                            }else {
 //                        log.info("识别不到目标！");
-                        Image scaledInstance = bufferedImage.getScaledInstance(jf.getWidth(), jf.getHeight(),Image.SCALE_DEFAULT);
-                        imageLabel.setIcon(new ImageIcon(scaledInstance));
+                                Image scaledInstance = bufferedImage.getScaledInstance(jf.getWidth(), jf.getHeight(),Image.SCALE_DEFAULT);
+                                imageLabel.setIcon(new ImageIcon(scaledInstance));
+                            }
+                        }else {
+                            ConstantParam.obj=null;
+                            //下一轮循环obj为非null时的内容打印
+                            ConstantParam.logIsCaptureWindowSign=-1;
+                            if(ConstantParam.logNotCaptureWindowSign==-1){
+                                log.info("链接断开/暂未捕捉到目标窗口...");
+                                ConstantParam.logNotCaptureWindowSign=1;
+                            }
+                            imageLabel.setIcon(null);
+                        }
+                        //延迟100毫秒
+                        Thread.sleep(10);
+//                YoloTools.captureAndSave(ConstantParam.window);
+
+                    }catch (RuntimeException | InterruptedException | IOException e){
+                        e.printStackTrace();
                     }
-                }else {
-                    ConstantParam.obj=null;
-                    //下一轮循环obj为非null时的内容打印
-                    ConstantParam.logIsCaptureWindowSign=-1;
-                    if(ConstantParam.logNotCaptureWindowSign==-1){
-                        log.info("链接断开/暂未捕捉到目标窗口...");
-                        ConstantParam.logNotCaptureWindowSign=1;
-                    }
-                    imageLabel.setIcon(null);
                 }
-                //延迟100毫秒
-                Thread.sleep(10);
-            }catch (RuntimeException | InterruptedException | IOException e){
-                e.printStackTrace();
             }
-        }
+        }).start();
+
     }
 
 
