@@ -1,4 +1,4 @@
-package per.dnf.auto;
+package per.dnf.auto.entity;
 
 import com.sun.jna.platform.win32.WinDef;
 import lombok.Data;
@@ -6,7 +6,7 @@ import lombok.Data;
 /**
  * @author kbdog
  * @package per.dnf.auto
- * @description
+ * @description 实体
  * @date 2023/3/6 19:20
  */
 @Data

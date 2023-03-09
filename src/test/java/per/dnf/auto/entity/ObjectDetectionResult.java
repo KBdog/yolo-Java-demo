@@ -1,13 +1,13 @@
-package per.dnf.auto;
+package per.dnf.auto.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
- * @author will
- * @email zq2599@gmail.com
- * @date 2021/10/17 5:10 下午
- * @description 存数据的bean
+ * @author kbdog
+ * @package per.dnf.auto.capture
+ * @description 推理实体
+ * @date 2023/3/10 0:15
  */
 @Data
 @AllArgsConstructor

@@ -1,4 +1,4 @@
-package per.dnf.auto;
+package per.dnf.auto.capture;
 
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinGDI;

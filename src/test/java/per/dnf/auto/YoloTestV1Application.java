@@ -22,14 +22,14 @@ import java.util.List;
  * @since 1.0
  * @description 网上代码：测试第一个yolo推理
  */
-public class YoloTestApplication {
+public class YoloTestV1Application {
 
     public static void main(String[] args) throws IOException {
         Loader.load(opencv_java.class); // 加载opencv
 
         // 读取类别名称
         String[] names = new String[80];
-//        try (BufferedReader reader = new BufferedReader(new InputStreamReader(YoloTestApplication.class.getClassLoader().getResourceAsStream("C:\\Users\\Lenovo\\Desktop\\OpenCV\\coco.names")))) {
+//        try (BufferedReader reader = new BufferedReader(new InputStreamReader(YoloTestV1Application.class.getClassLoader().getResourceAsStream("C:\\Users\\Lenovo\\Desktop\\OpenCV\\coco.names")))) {
 //            for (int i = 0; i < names.length; i++) {
 //                names[i] = reader.readLine();
 //            }

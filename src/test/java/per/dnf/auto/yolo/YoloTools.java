@@ -1,10 +1,8 @@
-package per.dnf.auto;
+package per.dnf.auto.yolo;
 
-import com.sun.jna.platform.WindowUtils;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import lombok.extern.slf4j.Slf4j;
-import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.DoublePointer;
 import org.bytedeco.javacpp.FloatPointer;
 import org.bytedeco.javacpp.IntPointer;
@@ -17,20 +15,15 @@ import org.bytedeco.opencv.opencv_core.Point;
 import org.bytedeco.opencv.opencv_dnn.Net;
 import org.bytedeco.opencv.opencv_text.FloatVector;
 import org.bytedeco.opencv.opencv_text.IntVector;
-import org.opencv.core.CvType;
-import org.opencv.core.MatOfByte;
 import org.opencv.dnn.Dnn;
-import org.opencv.imgcodecs.Imgcodecs;
+import per.dnf.auto.entity.ObjectDetectionResult;
+import per.dnf.auto.constant.ConstantParam;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -46,24 +39,11 @@ import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_SIMPLEX;
 /**
  * @author kbdog
  * @package per.dnf.auto
- * @description
+ * @description yolo工具类
  * @date 2023/3/7 0:46
  */
 @Slf4j
 public class YoloTools {
-    //根目录
-    private static String rootPath="C:\\Users\\Lenovo\\Desktop\\OpenCV";
-    //识别图片文件
-    private static String imagePath="C:\\Users\\Lenovo\\Desktop\\OpenCV\\dog.png";
-    //配置文件
-//    private static String cfgPath="C:\\Users\\Lenovo\\Desktop\\OpenCV\\yolov4.cfg";
-    private static String cfgPath="C:\\Users\\Lenovo\\Desktop\\yolov4\\yolov4-custom.cfg";
-    //权重文件
-//    private static String weightsPath="C:\\Users\\Lenovo\\Desktop\\OpenCV\\yolov4.weights";
-    private static String weightsPath="C:\\Users\\Lenovo\\Desktop\\yolov4\\Anime-Head.v1i.darknet\\weight\\yolov4-custom_2_8.weights.weights";
-    //名称文件
-//    private static String namesPath="C:\\Users\\Lenovo\\Desktop\\OpenCV\\coco.names";
-    private static String namesPath="C:\\Users\\Lenovo\\Desktop\\yolov4\\obj.names";
     //图片宽度
     private static int width=608;
     //图片高度
@@ -85,7 +65,7 @@ public class YoloTools {
         // 初始化打印一下，确保编码正常，否则日志输出会是乱码
         log.info("file.encoding is " + System.getProperty("file.encoding"));
         // 神经网络初始化
-        net = readNetFromDarknet(cfgPath, weightsPath);
+        net = readNetFromDarknet(ConstantParam.cfgPath, ConstantParam.weightsPath);
         // 检查网络是否为空
         if (net.empty()) {
             log.error("神经网络初始化失败");
@@ -108,9 +88,9 @@ public class YoloTools {
 
         // 分类名称
         try {
-            names = Files.readAllLines(Paths.get(namesPath));
+            names = Files.readAllLines(Paths.get(ConstantParam.namesPath));
         } catch (IOException e) {
-            log.error("获取分类名称失败，文件路径[{}]", namesPath, e);
+            log.error("获取分类名称失败，文件路径[{}]", ConstantParam.namesPath, e);
         }
     }
 
@@ -343,16 +323,17 @@ public class YoloTools {
         String newFileName = UUID.randomUUID() + ".png";
 
         // 图片写到磁盘上
-        imwrite(rootPath + "/" + newFileName, src);
+        imwrite(ConstantParam.rootPath + "/" + newFileName, src);
 
     }
 
     //bufferedImage转byte[]
     public static byte[] changeBufferedImageToByte(BufferedImage bufferedImage) throws IOException {
-        ByteArrayOutputStream outStream =new ByteArrayOutputStream();
-        ImageIO.write(bufferedImage, "png", outStream);
+        ByteArrayOutputStream out =new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, "jpg", out);
         //把outStream里的数据写入内存
-        return outStream.toByteArray();
+        byte[]byteArray= out.toByteArray();
+        return byteArray;
     }
 
 
