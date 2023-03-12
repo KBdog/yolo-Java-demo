@@ -39,14 +39,19 @@ public class CaptureWindowTools {
                 int processId = instance.GetWindowThreadProcessId(hwnd, null);
                 if(!"".equals(title)&&windowsName!=null&&title.indexOf(windowsName)!=-1){
                     WindowObj windowObj=new WindowObj();
+//                    Integer x=(int)rectangle.getX();
+//                    Integer y=(int)rectangle.getY();
                     Integer width=(int) rectangle.getWidth();
                     Integer height=(int) rectangle.getHeight();
+//                    windowObj.setX(x);
+//                    windowObj.setY(y);
+                    windowObj.setRectangle(rectangle);
                     windowObj.setHwnd(hwnd);
                     windowObj.setWidth(width);
                     windowObj.setHeight(height);
                     windowObj.setTitle(title);
                     windowObj.setFilePath(filePath);
-                    windowObj.setRectangle(rectangle.toString());
+                    windowObj.setRectangleString(rectangle.toString());
                     windowObj.setProcessId(processId);
                     return windowObj;
                 }
@@ -68,12 +73,13 @@ public class CaptureWindowTools {
                         WindowObj windowObj=new WindowObj();
                         Integer width=(int) rectangle.getWidth();
                         Integer height=(int) rectangle.getHeight();
+                        windowObj.setRectangle(rectangle);
                         windowObj.setHwnd(hwnd);
                         windowObj.setWidth(width);
                         windowObj.setHeight(height);
                         windowObj.setTitle(title);
                         windowObj.setFilePath(filePath);
-                        windowObj.setRectangle(rectangle.toString());
+                        windowObj.setRectangleString(rectangle.toString());
                         windowObj.setProcessId(processId);
                         return windowObj;
                     }

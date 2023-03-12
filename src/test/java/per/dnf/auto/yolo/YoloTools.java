@@ -15,6 +15,7 @@ import org.bytedeco.opencv.opencv_core.Point;
 import org.bytedeco.opencv.opencv_dnn.Net;
 import org.bytedeco.opencv.opencv_text.FloatVector;
 import org.bytedeco.opencv.opencv_text.IntVector;
+import org.opencv.core.CvType;
 import org.opencv.dnn.Dnn;
 import per.dnf.auto.entity.ObjectDetectionResult;
 import per.dnf.auto.constant.ConstantParam;
@@ -94,8 +95,8 @@ public class YoloTools {
         }
     }
 
-    //给每个物体标记上框
-    public static Mat markMat(Mat src){
+    //给原图每个物体标记上框
+    public static Mat markMatToSrc(Mat src){
         long start = System.currentTimeMillis();
         log.info("开始标记图片...");
         // 执行推理
@@ -123,6 +124,39 @@ public class YoloTools {
                 "ms,处理原始推理结果耗时:"+(afterPostprocessTime-afterPredictTime)+
                 "ms,标记处理耗时"+(afterMarkTime-afterPostprocessTime)+"ms,总耗时:"+(stop-start)+"ms");
         return src;
+    }
+
+    //给新的透明画布标记上框(用处理好的src获取检测物体坐标)
+    public static Mat markMatToNewPic(Mat src){
+        //新的透明画布
+        Mat mat=new Mat(src.rows(),src.cols(), CvType.CV_8UC4,new Scalar(0,0,255,125));
+        long start = System.currentTimeMillis();
+        log.info("开始标记图片...");
+        // 执行推理
+        MatVector outs = doPredict(src);
+        long afterPredictTime = System.currentTimeMillis();
+        // 处理原始的推理结果，
+        // 对检测到的每个目标，找出置信度最高的类别作为改目标的类别，
+        // 还要找出每个目标的位置，这些信息都保存在ObjectDetectionResult对象中
+        List<ObjectDetectionResult> results = postprocess(src, outs);
+        long afterPostprocessTime = System.currentTimeMillis();
+        // 释放资源
+        outs.releaseReference();
+        // 检测到的目标总数
+        int detectNum = results.size();
+        long afterMarkTime=System.currentTimeMillis();
+        if(detectNum>0){
+            // 计算出总耗时，并输出在图片的左上角
+            printTimeUsed(mat);
+            // 将每一个被识别的对象在图片框出来，并在框的左上角标注该对象的类别
+            markEveryDetectObject(mat, results);
+            afterMarkTime=System.currentTimeMillis();
+        }
+        long stop = System.currentTimeMillis();
+        log.info("标记图片完成,一共检测到"+detectNum+"个目标,推理耗时:"+(afterPredictTime-start)+
+                "ms,处理原始推理结果耗时:"+(afterPostprocessTime-afterPredictTime)+
+                "ms,标记处理耗时"+(afterMarkTime-afterPostprocessTime)+"ms,总耗时:"+(stop-start)+"ms");
+        return mat;
     }
 
 
@@ -382,7 +416,7 @@ public class YoloTools {
         }
         Mat mat = YoloTools.changeByteToMat( bytes);
 
-        Mat resultMat = YoloTools.markMat(mat);
+        Mat resultMat = YoloTools.markMatToSrc(mat);
         YoloTools.saveMarkedImage(resultMat);
         System.out.println("打印完成");
     }

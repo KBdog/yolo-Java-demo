@@ -38,7 +38,10 @@ public class AutomationWindows {
         }));
 
         //实例化窗口
+//        JFrame.setDefaultLookAndFeelDecorated(true);
         JFrame jFrame = new JFrame("dnf自动化搬砖");
+        //无边框模式,与JFrame.setDefaultLookAndFeelDecorated(true)冲突
+        jFrame.setUndecorated(true);
         //窗口大小
         int windowWidth=480;
         int windowHeight=windowWidth*10/16;
@@ -48,6 +51,9 @@ public class AutomationWindows {
         jFrame.setAlwaysOnTop(true);
         //窗口关闭的同时程序关闭
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //设置背景透明
+        jFrame.setBackground(new Color(0,0,0,0));
+
 
         //开始监控屏幕
         //拿到工具类
@@ -67,6 +73,7 @@ public class AutomationWindows {
         //利用label显示图片
         JLabel imageLabel = new JLabel();
         jFrame.add(imageLabel);
+
 
         /**
          * 进行转化
@@ -93,6 +100,7 @@ public class AutomationWindows {
                     if(ConstantParam.obj!=null){
                         //捕捉屏幕
                         ConstantParam.currentScreen=CaptureWindowTools.captureWindows(ConstantParam.obj.getHwnd());
+                        jFrame.setBounds(ConstantParam.obj.getRectangle());
                     }
                 }
             }
@@ -109,9 +117,11 @@ public class AutomationWindows {
                         ConstantParam.logIsCaptureWindowSign=1;
                         log.info("窗口标题:"+ConstantParam.obj.getTitle());
                         log.info("文件路径:"+ConstantParam.obj.getFilePath());
-                        log.info("窗口矩形:"+ConstantParam.obj.getRectangle());
+                        log.info("窗口矩形:"+ConstantParam.obj.getRectangleString());
                         log.info("进程线程id:"+ConstantParam.obj.getProcessId());
                     }
+
+
                     /**
                      * 进行转化
                      */
@@ -124,7 +134,8 @@ public class AutomationWindows {
                     }
                     if(bytes!=null){
                         Mat mat = YoloTools.changeByteToMat( bytes);
-                        Mat resultMat = YoloTools.markMat(mat);
+//                        Mat resultMat = YoloTools.markMatToSrc(mat);
+                        Mat resultMat = YoloTools.markMatToNewPic(mat);
                         resultImage = YoloTools.matToBufferImageV3(resultMat);
                     }
 
