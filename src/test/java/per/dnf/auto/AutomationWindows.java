@@ -3,6 +3,7 @@ package per.dnf.auto;
 
 import lombok.extern.slf4j.Slf4j;
 import org.bytedeco.opencv.opencv_core.Mat;
+import org.opencv.core.Core;
 import per.dnf.auto.capture.CaptureWindowTools;
 import per.dnf.auto.constant.ConstantParam;
 import per.dnf.auto.yolo.YoloTools;

@@ -15,6 +15,7 @@ import org.bytedeco.opencv.opencv_core.Point;
 import org.bytedeco.opencv.opencv_dnn.Net;
 import org.bytedeco.opencv.opencv_text.FloatVector;
 import org.bytedeco.opencv.opencv_text.IntVector;
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.dnn.Dnn;
 import per.dnf.auto.entity.ObjectDetectionResult;
@@ -78,9 +79,11 @@ public class YoloTools {
         int enableGPUCount = getCudaEnabledDeviceCount();
         log.info("可用GPU数量:"+enableGPUCount);
         if (enableGPUCount > 0) {
+            log.info("设置GPU模式！");
             net.setPreferableBackend(opencv_dnn.DNN_BACKEND_CUDA);
             net.setPreferableTarget(opencv_dnn.DNN_TARGET_CUDA);
         }else {
+            log.info("设置CPU模式！");
             // 设置计算后台：如果电脑有GPU，可以指定为：DNN_BACKEND_CUDA
             net.setPreferableBackend(Dnn.DNN_BACKEND_OPENCV);
             // 指定为 CPU 模式
@@ -183,6 +186,7 @@ public class YoloTools {
 
         // 推理，结果保存在outs中
         net.forward(outs, outNames);
+
 
         // 释放资源
         inputBlob.release();

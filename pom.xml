@@ -51,25 +51,40 @@
             <version>5.12.1</version>
         </dependency>
         <!--opencv 依赖-->
-<!--        <dependency>-->
-<!--            <groupId>org.bytedeco</groupId>-->
-<!--            <artifactId>opencv-platform</artifactId>-->
-<!--            <version>4.5.3-1.5.6</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>opencv-platform</artifactId>
+            <version>4.7.0-1.5.9</version>
+        </dependency>
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>javacv-platform</artifactId>
-            <version>1.5.6</version>
+            <version>1.5.9</version>
         </dependency>
-
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>opencv-platform-gpu</artifactId>
-            <version>4.5.3-1.5.6</version>
+            <version>4.7.0-1.5.9</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.bytedeco/cuda-platform-redist -->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>cuda-platform-redist</artifactId>
+            <version>12.1-8.9-1.5.9</version>
+        </dependency>
+        <!-- Optional dependencies to load the Python module -->
+        <!-- https://mvnrepository.com/artifact/org.bytedeco/numpy-platform -->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>numpy-platform</artifactId>
+            <version>1.24.3-1.5.9</version>
         </dependency>
 
 
+
     </dependencies>
+
 
     <build>
         <plugins>
